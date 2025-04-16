@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Take home task and training"
 authors = ["Tomislav Nazifović <tomislav.nazifovic@gmail.com>"]
 readme = "README.md"
-packages = [{include = "django_proj_task", from = "fakultet_upis"}]
+#packages = [{include = "django_proj_task", from = "fakultet_upis"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
