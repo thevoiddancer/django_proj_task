@@ -137,4 +137,4 @@ AUTHENTICATION_BACKENDS = [
     'upis.auth.KorisnikBackend',
 ]
 
-# AUTH_USER_MODEL = 'yourapp.Korisnik'
+AUTH_USER_MODEL = 'upis.Korisnik'

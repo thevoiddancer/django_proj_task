@@ -1,4 +1,6 @@
+from .managers import KorisnikManager  
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 class Predmet(models.Model):
     naziv = models.CharField(max_length=100, null=False, blank=False)
@@ -24,7 +26,8 @@ class Smjer(models.Model):
         verbose_name = 'Smjer'
         verbose_name_plural = 'Smjerovi'
 
-class Korisnik(models.Model):
+# class Korisnik(models.Model):
+class Korisnik(AbstractBaseUser, PermissionsMixin):
     ime = models.CharField(max_length=100, null=False, blank=False)
     prezime = models.CharField(max_length=100, null=False, blank=False)
     email = models.EmailField(unique=True, null=False, blank=False)
@@ -35,6 +38,12 @@ class Korisnik(models.Model):
         ('user', 'Student'),
     ]
     tip_korisnika = models.CharField(max_length=20, choices=TIP_KORISNIKA, default='user')
+
+    USERNAME_FIELD = 'email'  # used to log in
+    REQUIRED_FIELDS = ['ime', 'prezime']  # asked when creating superuser
+    objects = KorisnikManager()  # required
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'korisnici'

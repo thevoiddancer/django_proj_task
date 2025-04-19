@@ -68,7 +68,7 @@ def korisnik_login(request):
             if korisnik:
                 login(request, korisnik, backend='upis.auth.KorisnikBackend')
                 messages.success(request, f"Welcome back, {korisnik.ime}!")
-                return redirect('some-view')  # Update with your desired route
+                return redirect('upis-home')  # Update with your desired route
             else:
                 messages.error(request, "Invalid email or password.")
     else:
