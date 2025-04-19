@@ -1,0 +1,76 @@
+from django.db import models
+
+class Predmet(models.Model):
+    naziv = models.CharField(max_length=100, null=False, blank=False)
+    opis = models.CharField(max_length=200, null=False, blank=False)
+    nositelj = models.CharField(max_length=100, null=False, blank=False)
+    ects = models.IntegerField(null=False, blank=False)
+
+    class Meta:
+        db_table = 'predmeti'
+        ordering = ['naziv']
+        verbose_name = 'Predmet'
+        verbose_name_plural = 'Predmeti'
+
+class Smjer(models.Model):
+    naziv = models.CharField(max_length=100, null=False, blank=False)
+    kvota = models.IntegerField(null=False, blank=False)
+    slobodna_mjesta = models.IntegerField(null=False, blank=False)
+    predmeti = models.ManyToManyField('Predmet', related_name='smjerovi')
+
+    class Meta:
+        db_table = 'smjer'
+        ordering = ['naziv']
+        verbose_name = 'Smjer'
+        verbose_name_plural = 'Smjerovi'
+
+class Korisnik(models.Model):
+    ime = models.CharField(max_length=100, null=False, blank=False)
+    prezime = models.CharField(max_length=100, null=False, blank=False)
+    email = models.EmailField(unique=True, null=False, blank=False)
+    password_hash = models.CharField(max_length=255, null=False, blank=False)
+
+    TIP_KORISNIKA = [
+        ('admin', 'Administrator'),
+        ('user', 'Student'),
+    ]
+    tip_korisnika = models.CharField(max_length=20, choices=TIP_KORISNIKA, default='user')
+
+    class Meta:
+        db_table = 'korisnici'
+        ordering = ['prezime', 'ime']
+        verbose_name = 'Korisnik'
+        verbose_name_plural = 'Korisnici'
+
+class Prijave(models.Model):
+    korisnik = models.ForeignKey(Korisnik, on_delete=models.CASCADE, null=False, blank=False)
+    smjer = models.ForeignKey(Smjer, on_delete=models.CASCADE, null=False, blank=False)
+    datum_rođenja = models.DateField(null=False, blank=False)
+    mjesto_rođenja = models.CharField(max_length=100, null=False, blank=False)
+    završena_škola = models.CharField(max_length=100, null=False, blank=False)
+    molba = models.FileField(upload_to='molbe/', null=True, blank=True)
+    dokument = models.FileField(upload_to='dokumenti/', null=True, blank=True)
+    prosjek_ocjena = models.FloatField(null=True, blank=True)
+    ocjena_matura = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'prijave'
+        verbose_name = 'Prijava'
+        verbose_name_plural = 'Prijave'
+
+        constraints = [
+            models.UniqueConstraint(fields=['korisnik', 'smjer'], name='unique_korisnik_smjer')
+        ]
+
+class Upis(models.Model):
+    # TODO: implementirati logiku tako da se spremi informacija u slučaju brisanja entrya
+    # možda spremiti podatke u obliku jsona za studenta i upisnika?
+    student = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
+    upisnik = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='upisnik', null=False, blank=False)
+    vrijeme_odobrenja = models.DateTimeField(null=False, blank=False)
+    objasnjenje_odobrenja = models.TextField(null=False, blank=False)
+
+    class Meta:
+        db_table = 'upisi'
+        verbose_name = 'Upis'
+        verbose_name_plural = 'Upisi'
