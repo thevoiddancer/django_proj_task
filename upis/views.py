@@ -35,7 +35,7 @@ def home(request):
 from django.db.models.query import QuerySet
 from django.views.generic import ListView
 import typing as tp
-from .models import Smjer
+from .models import Smjer, Prijava
 
 class SmjeroviListView(ListView):
     def get_queryset(self) -> QuerySet[tp.Any]:
@@ -44,6 +44,14 @@ class SmjeroviListView(ListView):
     
     def get_context_data(self):
         context = super().get_context_data()
+        korisnik = self.request.user
+        prijave = Prijava.objects.filter(korisnik_id=korisnik.id)
+        prijave_ids = [p.smjer_id for p in prijave]
+        lista_smjerova = Smjer.objects.all()
+
+        available_smjerovi = lista_smjerova.exclude(id__in=prijave_ids)
+        context['dostupni_smjerovi'] = available_smjerovi
+        context['moze_prijaviti'] = available_smjerovi.exists()
         return context
 
 class PredmetiListView(ListView):
@@ -108,12 +116,10 @@ from .forms import PrijavaForm
 def prijava_view(request, smjer=None):
     if request.method == 'POST':
         form = PrijavaForm(request.POST, request.FILES, user=request.user, smjer=smjer)
-        print("validnost forma", form.is_valid())
         if form.is_valid():
             form.save()
-            return redirect('success')  # Replace 'success' with the actual name of your success page.
-        else:
-            print(form.errors)
+            messages.success(request, f"Prijava na {form.cleaned_data.get('smjer')} uspješno zabilježena.")
+            return redirect('upis-home')  # Replace 'success' with the actual name of your success page.
     else:
         form = PrijavaForm(user=request.user, smjer=smjer)
 

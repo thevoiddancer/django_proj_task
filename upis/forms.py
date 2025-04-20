@@ -60,7 +60,6 @@ class PrijavaForm(forms.ModelForm):
         print(args)
         print(kwargs)
         smjer = kwargs.pop('smjer', None)
-        smjer_object = Smjer.objects.get(naziv=smjer)
         user = kwargs.pop('user', None)
 
         super().__init__(*args, **kwargs)
@@ -71,7 +70,8 @@ class PrijavaForm(forms.ModelForm):
         #     to_field_name="naziv",  # Display the 'naziv' of the Smjer in the dropdown
         #     widget=forms.Select(attrs={'class': 'form-control'})
         # )            
-        if smjer_object:
+        if smjer:
+            smjer_object = Smjer.objects.get(naziv=smjer)
             print("imam smjer")
             print(self.fields['smjer'])
             self.fields['smjer'].initial = smjer_object.id
@@ -81,6 +81,12 @@ class PrijavaForm(forms.ModelForm):
 
         if user:
             self.instance.korisnik = user
+
+            prijave = Prijava.objects.filter(korisnik_id=user.id)
+            prijave_ids = [p.smjer_id for p in prijave]
+
+            available_smjerovi = Smjer.objects.exclude(id__in=prijave_ids)
+            self.fields['smjer'].queryset = available_smjerovi
 
     def validate_file_upload(self):
         molba = self.cleaned_data.get('molba')
