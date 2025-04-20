@@ -1,0 +1,31 @@
+{% extends "upis/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <table class="table table-bordered table-sm w-auto text-center">
+                <thead class="thead-light">
+                    <tr>
+                      <th class="align-middle">Naziv</th>
+                      <th class="align-middle">Kvota</th>
+                      <th class="align-middle">Slobodno</th>
+                      <th class="align-middle">Više<br />informacija</th>
+                      <th class="align-middle">Prijavi se</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for smjer in object_list %}
+                    <tr>
+                        <td>{{ smjer.naziv }}</td>
+                        <td>{{ smjer.kvota }}</td>
+                        <td>{{ smjer.slobodno }}</td>
+                        <td><a href="{% url 'predmeti_list' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Više</a></td>
+                        <td><a href="{% url 'prijava' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <!-- <a href="#" class="btn btn btn-outline-secondary d-block">{{ smjer.naziv }}</a> -->
+            </table>
+            <a href="{% url 'prijava' %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
+        </div>
+    </article>
+{% endblock content %}

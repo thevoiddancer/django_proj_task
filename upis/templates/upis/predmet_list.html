@@ -1,0 +1,26 @@
+{% extends "upis/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <table class="table table-bordered table-sm w-auto text-center">
+                <thead class="thead-light">
+                    <tr>
+                      <th class="align-middle">ECTS</th>
+                      <th class="align-middle">Naziv predmeta i nositelj</th>
+                      <th class="align-middle">Opis</th>
+                    </tr>
+                  </thead>
+                <tbody>
+                    {% for predmet in object_list %}
+                    <tr>
+                        <td>{{ predmet.ects }}</td>
+                        <td>{{ predmet.naziv }} <br /> {{ predmet.nositelj }}</td>
+                        <td>{{ predmet.opis }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'prijava' smjer %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
+        </div>
+    </article>
+{% endblock content %}

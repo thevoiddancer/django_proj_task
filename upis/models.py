@@ -13,20 +13,29 @@ class Predmet(models.Model):
         ordering = ['naziv']
         verbose_name = 'Predmet'
         verbose_name_plural = 'Predmeti'
+    
+    def __repr__(self):
+        return self.naziv
 
 class Smjer(models.Model):
     naziv = models.CharField(max_length=100, null=False, blank=False)
     kvota = models.IntegerField(null=False, blank=False)
-    slobodna_mjesta = models.IntegerField(null=False, blank=False)
+    slobodno = models.IntegerField(null=False, blank=False)
     predmeti = models.ManyToManyField('Predmet', related_name='smjerovi')
 
     class Meta:
-        db_table = 'smjer'
+        db_table = 'smjerovi'
         ordering = ['naziv']
         verbose_name = 'Smjer'
         verbose_name_plural = 'Smjerovi'
 
-# class Korisnik(models.Model):
+    def __repr__(self):
+        return self.naziv
+
+    def __str__(self):
+        return self.naziv
+
+
 class Korisnik(AbstractBaseUser, PermissionsMixin):
     ime = models.CharField(max_length=100, null=False, blank=False)
     prezime = models.CharField(max_length=100, null=False, blank=False)
@@ -51,7 +60,10 @@ class Korisnik(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Korisnik'
         verbose_name_plural = 'Korisnici'
 
-class Prijave(models.Model):
+    def __repr__(self):
+        return f'{self.ime} {self.prezime}'
+
+class Prijava(models.Model):
     korisnik = models.ForeignKey(Korisnik, on_delete=models.CASCADE, null=False, blank=False)
     smjer = models.ForeignKey(Smjer, on_delete=models.CASCADE, null=False, blank=False)
     datum_rođenja = models.DateField(null=False, blank=False)
@@ -71,6 +83,9 @@ class Prijave(models.Model):
             models.UniqueConstraint(fields=['korisnik', 'smjer'], name='unique_korisnik_smjer')
         ]
 
+    def __repr__(self):
+        return f'{self.korisnik.prezime} > {self.smjer.naziv}'
+
 class Upis(models.Model):
     # TODO: implementirati logiku tako da se spremi informacija u slučaju brisanja entrya
     # možda spremiti podatke u obliku jsona za studenta i upisnika?
@@ -83,3 +98,6 @@ class Upis(models.Model):
         db_table = 'upisi'
         verbose_name = 'Upis'
         verbose_name_plural = 'Upisi'
+    
+    def __repr__(self):
+        return f'{self.student.prezime} [upisao: {self.upisnik.prezime}]'
