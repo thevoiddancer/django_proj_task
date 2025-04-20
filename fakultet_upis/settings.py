@@ -138,3 +138,4 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_USER_MODEL = 'upis.Korisnik'
+LOGIN_URL = 'login'

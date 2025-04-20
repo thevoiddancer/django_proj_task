@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='upis-home'),
-    path('register/', views.register, name='register'),
+    # path('register/', views.register, name='register'),
 
     # path('search/', views.search, name='samples-search'),
     # path('search/song-search', views.song_search_view, name='song-search-results'),

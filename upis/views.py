@@ -1,3 +1,6 @@
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
@@ -5,6 +8,7 @@ from .forms import KorisnikLoginForm
 from .models import Korisnik
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 
 home_list = [
     {
@@ -49,7 +53,7 @@ def register(request):
         if form.is_valid():
             korisnik = form.save()
             messages.success(request, f'Account created for {korisnik.ime} {korisnik.prezime}')
-            return redirect('upis-home')
+            return redirect('login')
     else:
         form = KorisnikCreationForm()
     return render(request, 'upis/register.html', {'form': form})
@@ -61,10 +65,7 @@ def korisnik_login(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            print(email)
-            print(password)
             korisnik = authenticate(request, email=email, password=password)
-            print(korisnik)
             if korisnik:
                 login(request, korisnik, backend='upis.auth.KorisnikBackend')
                 messages.success(request, f"Welcome back, {korisnik.ime}!")
@@ -74,3 +75,13 @@ def korisnik_login(request):
     else:
         form = KorisnikLoginForm()
     return render(request, 'upis/login.html', {'form': form})
+
+
+def korisnik_logout(request):
+    logout(request)
+    # messages.success(request, "You have been logged out.")
+    return render(request, 'upis/logout.html')
+
+@login_required
+def user_admin(request):
+    return render(request, 'upis/user_admin.html')
