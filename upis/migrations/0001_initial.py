@@ -5,102 +5,197 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Korisnik',
+            name="Korisnik",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ime', models.CharField(max_length=100)),
-                ('prezime', models.CharField(max_length=100)),
-                ('email', models.EmailField(max_length=254, unique=True)),
-                ('password_hash', models.CharField(max_length=255)),
-                ('tip_korisnika', models.CharField(choices=[('admin', 'Administrator'), ('user', 'Student')], default='user', max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ime", models.CharField(max_length=100)),
+                ("prezime", models.CharField(max_length=100)),
+                ("email", models.EmailField(max_length=254, unique=True)),
+                ("password_hash", models.CharField(max_length=255)),
+                (
+                    "tip_korisnika",
+                    models.CharField(
+                        choices=[("admin", "Administrator"), ("user", "Student")],
+                        default="user",
+                        max_length=20,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Korisnik',
-                'verbose_name_plural': 'Korisnici',
-                'db_table': 'korisnici',
-                'ordering': ['prezime', 'ime'],
+                "verbose_name": "Korisnik",
+                "verbose_name_plural": "Korisnici",
+                "db_table": "korisnici",
+                "ordering": ["prezime", "ime"],
             },
         ),
         migrations.CreateModel(
-            name='Predmet',
+            name="Predmet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('naziv', models.CharField(max_length=100)),
-                ('opis', models.CharField(max_length=200)),
-                ('nositelj', models.CharField(max_length=100)),
-                ('ects', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("naziv", models.CharField(max_length=100)),
+                ("opis", models.CharField(max_length=200)),
+                ("nositelj", models.CharField(max_length=100)),
+                ("ects", models.IntegerField()),
             ],
             options={
-                'verbose_name': 'Predmet',
-                'verbose_name_plural': 'Predmeti',
-                'db_table': 'predmeti',
-                'ordering': ['naziv'],
+                "verbose_name": "Predmet",
+                "verbose_name_plural": "Predmeti",
+                "db_table": "predmeti",
+                "ordering": ["naziv"],
             },
         ),
         migrations.CreateModel(
-            name='Smjer',
+            name="Smjer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('naziv', models.CharField(max_length=100)),
-                ('kvota', models.IntegerField()),
-                ('slobodna_mjesta', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("naziv", models.CharField(max_length=100)),
+                ("kvota", models.IntegerField()),
+                ("slobodna_mjesta", models.IntegerField()),
             ],
             options={
-                'verbose_name': 'Smjer',
-                'verbose_name_plural': 'Smjerovi',
-                'db_table': 'smjer',
-                'ordering': ['naziv'],
+                "verbose_name": "Smjer",
+                "verbose_name_plural": "Smjerovi",
+                "db_table": "smjer",
+                "ordering": ["naziv"],
             },
         ),
         migrations.CreateModel(
-            name='Upis',
+            name="Upis",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('vrijeme_odobrenja', models.DateTimeField()),
-                ('objasnjenje_odobrenja', models.TextField()),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='student', to='upis.korisnik')),
-                ('upisnik', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='upisnik', to='upis.korisnik')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("vrijeme_odobrenja", models.DateTimeField()),
+                ("objasnjenje_odobrenja", models.TextField()),
+                (
+                    "student",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="student",
+                        to="upis.korisnik",
+                    ),
+                ),
+                (
+                    "upisnik",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="upisnik",
+                        to="upis.korisnik",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Upis',
-                'verbose_name_plural': 'Upisi',
-                'db_table': 'upisi',
+                "verbose_name": "Upis",
+                "verbose_name_plural": "Upisi",
+                "db_table": "upisi",
             },
         ),
         migrations.CreateModel(
-            name='Prijave',
+            name="Prijave",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('korisnik', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='upis.korisnik')),
-                ('smjer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='upis.smjer')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "korisnik",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="upis.korisnik"
+                    ),
+                ),
+                (
+                    "smjer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="upis.smjer"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Prijava',
-                'verbose_name_plural': 'Prijave',
-                'db_table': 'prijave',
-                'constraints': [models.UniqueConstraint(fields=('korisnik', 'smjer'), name='unique_korisnik_smjer')],
+                "verbose_name": "Prijava",
+                "verbose_name_plural": "Prijave",
+                "db_table": "prijave",
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("korisnik", "smjer"), name="unique_korisnik_smjer"
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
-            name='PredmetiSmjera',
+            name="PredmetiSmjera",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('predmet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='upis.predmet')),
-                ('smjer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='upis.smjer')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "predmet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="upis.predmet"
+                    ),
+                ),
+                (
+                    "smjer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="upis.smjer"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Smjer',
-                'verbose_name_plural': 'Smjerovi',
-                'db_table': 'predmeti_smjera',
-                'constraints': [models.UniqueConstraint(fields=('predmet', 'smjer'), name='unique_predmet_smjer')],
+                "verbose_name": "Smjer",
+                "verbose_name_plural": "Smjerovi",
+                "db_table": "predmeti_smjera",
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("predmet", "smjer"), name="unique_predmet_smjer"
+                    )
+                ],
             },
         ),
     ]

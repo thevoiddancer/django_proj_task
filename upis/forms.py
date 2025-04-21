@@ -1,32 +1,50 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-from .models import Korisnik, Smjer, Prijava, Odobrenje
+
+from .models import Korisnik, Odobrenje, Prijava, Smjer
 
 
 class KorisnikForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
-    password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    password_confirm = forms.CharField(
+        widget=forms.PasswordInput, label="Confirm Password"
+    )
 
 
 class KorisnikEditForm(KorisnikForm):
     class Meta:
         model = Korisnik
-        fields = ['ime', 'prezime', 'email', 'is_staff', 'is_superuser', 'tip_korisnika']
+        fields = [
+            "ime",
+            "prezime",
+            "email",
+            "is_staff",
+            "is_superuser",
+            "tip_korisnika",
+        ]
+
 
 class KorisnikCreationForm(KorisnikForm):
     class Meta:
         model = Korisnik
-        fields = ['ime', 'prezime', 'email']
+        fields = ["ime", "prezime", "email"]
 
     def __init__(self, *args, **kwargs):
-        self.is_admin = kwargs.pop('is_admin', False)
+        self.is_admin = kwargs.pop("is_admin", False)
         super().__init__(*args, **kwargs)
 
         if self.is_admin:
-            self.fields['is_staff'] = forms.BooleanField(required=False, label="Is Staff")
-            self.fields['is_superuser'] = forms.BooleanField(required=False, label="Is Superuser")
-            self.fields['tip_korisnika'] = forms.ChoiceField(choices=Korisnik._meta.get_field('tip_korisnika').choices, label="Tip korisnika")
+            self.fields["is_staff"] = forms.BooleanField(
+                required=False, label="Is Staff"
+            )
+            self.fields["is_superuser"] = forms.BooleanField(
+                required=False, label="Is Superuser"
+            )
+            self.fields["tip_korisnika"] = forms.ChoiceField(
+                choices=Korisnik._meta.get_field("tip_korisnika").choices,
+                label="Tip korisnika",
+            )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -47,7 +65,7 @@ class KorisnikCreationForm(KorisnikForm):
             user.is_superuser = self.cleaned_data.get("is_superuser", False)
             user.tip_korisnika = self.cleaned_data.get("tip_korisnika")
         else:
-            user.tip_korisnika = 'user'
+            user.tip_korisnika = "user"
 
         if commit:
             user.save()
@@ -57,42 +75,42 @@ class KorisnikCreationForm(KorisnikForm):
 class OdobrenjeForm(forms.ModelForm):
     class Meta:
         model = Odobrenje
-        fields = ['objasnjenje']
+        fields = ["objasnjenje"]
 
 
 class KorisnikLoginForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
 
+
 class PrijavaForm(forms.ModelForm):
     class Meta:
         model = Prijava
         fields = [
-            'smjer', 
-            'datum_rođenja', 
-            'mjesto_rođenja', 
-            'završena_škola', 
-            'molba', 
-            'dokument', 
-            'prosjek_ocjena', 
-            'ocjena_matura'
+            "smjer",
+            "datum_rođenja",
+            "mjesto_rođenja",
+            "završena_škola",
+            "molba",
+            "dokument",
+            "prosjek_ocjena",
+            "ocjena_matura",
         ]
         widgets = {
-            'datum_rođenja': forms.DateInput(attrs={'type': 'date'}),
+            "datum_rođenja": forms.DateInput(attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
-        smjer = kwargs.pop('smjer', None)
-        user = kwargs.pop('user', None)
+        smjer = kwargs.pop("smjer", None)
+        user = kwargs.pop("user", None)
 
         super().__init__(*args, **kwargs)
 
         if smjer:
             smjer_object = Smjer.objects.get(naziv=smjer)
-            self.fields['smjer'].initial = smjer_object.id
-            self.fields['smjer'].widget = forms.HiddenInput()
+            self.fields["smjer"].initial = smjer_object.id
+            self.fields["smjer"].widget = forms.HiddenInput()
             self.smjer_label = smjer
-
 
         if user:
             self.instance.korisnik = user
@@ -101,15 +119,15 @@ class PrijavaForm(forms.ModelForm):
             prijave_ids = [p.smjer_id for p in prijave]
 
             available_smjerovi = Smjer.objects.exclude(id__in=prijave_ids)
-            self.fields['smjer'].queryset = available_smjerovi
+            self.fields["smjer"].queryset = available_smjerovi
 
     def validate_file_upload(self):
-        file = self.cleaned_data.get('file')
+        file = self.cleaned_data.get("file")
         if file:
-            if not file.name.endswith('.pdf'):
-                raise ValidationError('Dokument mora biti tipa PDF.')
+            if not file.name.endswith(".pdf"):
+                raise ValidationError("Dokument mora biti tipa PDF.")
             if file.size > 5 * 1024 * 1024:
-                raise ValidationError('Dokument mora biti manji od 5MB.')
+                raise ValidationError("Dokument mora biti manji od 5MB.")
         return file
 
     def clean_molba(self):

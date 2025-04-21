@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('upis', '0004_korisnik_groups_korisnik_is_active_korisnik_is_staff_and_more'),
+        ("upis", "0004_korisnik_groups_korisnik_is_active_korisnik_is_staff_and_more"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Prijave',
-            new_name='Prijava',
+            old_name="Prijave",
+            new_name="Prijava",
         ),
         migrations.AlterModelTable(
-            name='smjer',
-            table='smjerovi',
+            name="smjer",
+            table="smjerovi",
         ),
     ]

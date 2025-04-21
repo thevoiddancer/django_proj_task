@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('upis', '0001_initial'),
+        ("upis", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='korisnik',
-            name='password',
+            model_name="korisnik",
+            name="password",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
     ]

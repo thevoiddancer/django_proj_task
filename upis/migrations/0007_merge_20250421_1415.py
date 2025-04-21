@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('upis', '0002_alter_korisnik_password'),
-        ('upis', '0006_rename_slobodna_mjesta_smjer_slobodno'),
+        ("upis", "0002_alter_korisnik_password"),
+        ("upis", "0006_rename_slobodna_mjesta_smjer_slobodno"),
     ]
 
-    operations = [
-    ]
+    operations = []

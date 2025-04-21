@@ -1,6 +1,8 @@
 from django.contrib.auth.backends import BaseBackend
-from upis.models import Korisnik
 from django.contrib.auth.hashers import check_password
+
+from upis.models import Korisnik
+
 
 class KorisnikBackend(BaseBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):

@@ -5,24 +5,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('upis', '0009_rename_objasnjenje_odobrenja_odobrenje_objasnjenje_and_more'),
+        ("upis", "0009_rename_objasnjenje_odobrenja_odobrenje_objasnjenje_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='odobrenje',
-            name='smjer',
+            model_name="odobrenje",
+            name="smjer",
         ),
         migrations.RemoveField(
-            model_name='odobrenje',
-            name='student',
+            model_name="odobrenje",
+            name="student",
         ),
         migrations.AddField(
-            model_name='odobrenje',
-            name='prijava',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='student', to='upis.prijava'),
+            model_name="odobrenje",
+            name="prijava",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="student",
+                to="upis.prijava",
+            ),
             preserve_default=False,
         ),
     ]
