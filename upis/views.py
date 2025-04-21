@@ -1,15 +1,17 @@
 from django.urls import reverse_lazy
 from django.db.models.query import QuerySet
 from django.views.generic import ListView, DeleteView, CreateView, UpdateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import KorisnikCreationForm, KorisnikEditForm, KorisnikLoginForm, PrijavaForm
+from django.utils.timezone import now
+from .forms import KorisnikCreationForm, KorisnikEditForm, KorisnikLoginForm, PrijavaForm, OdobrenjeForm
 import typing as tp
-from .models import Smjer, Prijava, Korisnik
+from .models import Smjer, Prijava, Korisnik, Odobrenje, Odobrenje
+
 
 # to CBV
 def register(request):
@@ -116,6 +118,28 @@ class KorisnikEditView(StaffRequiredMixin, UpdateView):
         context['action'] = 'Edit'  # Add a flag for the template to know it's an edit action
         return context
 
+class OdobriView(StaffRequiredMixin, CreateView):
+    model = Odobrenje
+    form_class = OdobrenjeForm
+    template_name = 'upis/odobri.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.prijava = get_object_or_404(Prijava, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.prijava = self.prijava
+        form.instance.upisnik = self.request.user
+        form.instance.vrijeme = now()
+        valid_form = super().form_valid(form)
+
+        # korisnik = self.prijava.korisnik
+        # Prijava.objects.filter(korisnik=korisnik).exclude(pk=self.prijava.pk).delete()
+        return valid_form
+
+    def get_success_url(self):
+        return reverse_lazy('prijave')  # or wherever you want to redirect
+
 class SmjeroviListView(ListView):
     def get_queryset(self) -> QuerySet[tp.Any]:
         lista_smjerova = Smjer.objects.all()
@@ -147,3 +171,8 @@ class PredmetiListView(ListView):
         može_prijaviti = len(prijava) == 0
         context['moze_prijaviti'] = može_prijaviti
         return context
+
+class OdobrenjaView(StaffRequiredMixin, ListView):
+    def get_queryset(self) -> QuerySet[tp.Any]:
+        lista_smjerova = Odobrenje.objects.all()
+        return lista_smjerova

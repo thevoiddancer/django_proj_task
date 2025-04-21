@@ -20,7 +20,11 @@
                         <td>{{ smjer.slobodno }}</td>
                         <td><a href="{% url 'predmeti_list' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Više</a></td>
                         {% if smjer in dostupni_smjerovi %}
-                            <td><a href="{% url 'prijava' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a></td>
+                            {% if smjer.slobodno %}
+                                <td><a href="{% url 'prijava' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a></td>
+                            {% else %}
+                                <td class="align-middle">Kvota ispunjena</td>
+                            {% endif %}
                         {% else %}
                             <td class="align-middle">Prijavljen</td>
                         {% endif %}
@@ -29,7 +33,7 @@
                 </tbody>
                 <!-- <a href="#" class="btn btn btn-outline-secondary d-block">{{ smjer.naziv }}</a> -->
             </table>
-            {% if moze_prijaviti %}
+            {% if not moze_prijaviti %}
                 <a href="{% url 'prijava' %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
             {% endif %}
         </div>

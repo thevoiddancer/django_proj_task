@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-from .models import Korisnik, Smjer, Prijava
+from .models import Korisnik, Smjer, Prijava, Odobrenje
 
 
 class KorisnikForm(forms.ModelForm):
@@ -13,7 +13,6 @@ class KorisnikEditForm(KorisnikForm):
     class Meta:
         model = Korisnik
         fields = ['ime', 'prezime', 'email', 'is_staff', 'is_superuser', 'tip_korisnika']
-
 
 class KorisnikCreationForm(KorisnikForm):
     class Meta:
@@ -55,10 +54,15 @@ class KorisnikCreationForm(KorisnikForm):
         return user
 
 
+class OdobrenjeForm(forms.ModelForm):
+    class Meta:
+        model = Odobrenje
+        fields = ['objasnjenje']
+
+
 class KorisnikLoginForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
-
 
 class PrijavaForm(forms.ModelForm):
     class Meta:

@@ -11,6 +11,8 @@ urlpatterns = [
     path('korisnici/novi', views.KorisnikCreateView.as_view(), name='korisnici-novi'),
     path('korisnici/edit/<int:pk>/', views.KorisnikEditView.as_view(), name='korisnici-edit'),
     path('prijave/', views.PrijaveListView.as_view(), name='prijave'),
+    path('odobri/<int:pk>', views.OdobriView.as_view(), name='odobri'),
+    path('odobrenja/', views.OdobrenjaView.as_view(), name='odobrenja'),
     path('admin/', admin.site.urls),
     path('login/', views.korisnik_login, name='login'),
     path('logout/', views.korisnik_logout, name='logout'),

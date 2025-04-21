@@ -117,6 +117,7 @@
                 {% if user.is_staff %}
                   <a class="nav-item nav-link" href="{% url 'korisnici' %}">Korisnici</a>
                   <a class="nav-item nav-link" href="{% url 'prijave' %}">Prijave</a>
+                  <a class="nav-item nav-link" href="{% url 'odobrenja' %}">Odobrenja</a>
                 {% endif %}
                 <a class="nav-item nav-link" href="{% url 'logout' %}">Odjavi se</a>
               {% else %}

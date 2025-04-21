@@ -6,17 +6,10 @@
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Prijava na smjer</legend>
-                {% if form.smjer_label %}
-                    <div class="form-group">
-                        <label for="smjer">Smjer*</label>
-                            <p>{{ form.smjer_label }}</p>  <!-- Display the smjer as a label -->
-                    </div>
-                {% endif %}
                 {{ form|crispy }}
-
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Prijavi se na smjer</button>
+                <button class="btn btn-outline-info" type="submit">Odobri prijavu</button>
             </div>
         </form>
     </div>

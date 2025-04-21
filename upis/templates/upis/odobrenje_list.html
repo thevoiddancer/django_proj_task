@@ -8,15 +8,19 @@
                 <tr>
                   <th class="align-middle">Ime i prezime</th>
                   <th class="align-middle">Smjer</th>
-                  <th></th>
+                  <th class="align-middle">Upisnik</th>
+                  <th class="align-middle">Vrijeme</th>
+                  <th class="align-middle">Objasnjenje</th>
                 </tr>
             </thead>
             <tbody>
-                {% for prijava in object_list %}
+                {% for odobrenje in object_list %}
                 <tr>
-                    <td>{{ prijava.korisnik.ime }} {{ prijava.korisnik.prezime }}</td>
-                    <td>{{ prijava.smjer.naziv }}</td>
-                    <td><a href="{% url 'odobri' prijava.id %}" class="btn btn btn-outline-secondary d-block">Odobri</a></td>
+                    <td>{{ odobrenje.prijava.korisnik.ime }} {{ odobrenje.prijava.korisnik.prezime }}</td>
+                    <td>{{ odobrenje.prijava.smjer.naziv }}</td>
+                    <td>{{ odobrenje.upisnik.ime }} {{ odobrenje.upisnik.prezime }}</td>
+                    <td>{{ odobrenje.vrijeme }}</td>
+                    <td>{{ odobrenje.objasnjenje }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

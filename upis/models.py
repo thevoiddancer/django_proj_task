@@ -85,18 +85,20 @@ class Prijava(models.Model):
     def __repr__(self):
         return f'{self.korisnik.prezime} > {self.smjer.naziv}'
 
-class Upis(models.Model):
+class Odobrenje(models.Model):
     # TODO: implementirati logiku tako da se spremi informacija u slučaju brisanja entrya
     # možda spremiti podatke u obliku jsona za studenta i upisnika?
-    student = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
+    # student = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
+    # smjer = models.ForeignKey(Smjer, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
+    prijava = models.ForeignKey(Prijava, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
     upisnik = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='upisnik', null=False, blank=False)
-    vrijeme_odobrenja = models.DateTimeField(null=False, blank=False)
-    objasnjenje_odobrenja = models.TextField(null=False, blank=False)
+    vrijeme = models.DateTimeField(null=False, blank=False)
+    objasnjenje = models.TextField(null=False, blank=False)
 
     class Meta:
-        db_table = 'upisi'
-        verbose_name = 'Upis'
-        verbose_name_plural = 'Upisi'
+        db_table = 'odobrenja'
+        verbose_name = 'Odobrenje'
+        verbose_name_plural = 'Odobrenja'
     
-    def __repr__(self):
-        return f'{self.student.prezime} [upisao: {self.upisnik.prezime}]'
+    # def __repr__(self):
+        # return f'{self.student.prezime} [upisao: {self.upisnik.prezime}]'
