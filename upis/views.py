@@ -1,41 +1,120 @@
-from django.contrib.auth import logout
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib import messages
-from .forms import KorisnikLoginForm
-from .models import Korisnik
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required
-
-home_list = [
-    {
-        'title': 'Tehnološki',
-        'content': 'Kvota: 20',
-    },
-    {
-        'title': 'Informatički',
-        'content': 'Kvota: 120',
-    },
-    {
-        'title': 'Matematički',
-        'content': 'Kvota: 10',
-    },
-]
-
-# Create your views here.
-def home(request):
-    context = {
-        'posts': home_list,
-    }
-    return render(request, 'upis/home.html', context=context)
-
+from django.urls import reverse_lazy
 from django.db.models.query import QuerySet
-from django.views.generic import ListView
+from django.views.generic import ListView, DeleteView, CreateView, UpdateView
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth.decorators import login_required
+from .forms import KorisnikCreationForm, KorisnikEditForm, KorisnikLoginForm, PrijavaForm
 import typing as tp
-from .models import Smjer, Prijava
+from .models import Smjer, Prijava, Korisnik
+
+# to CBV
+def register(request):
+    if request.method == "POST":
+        form = KorisnikCreationForm(request.POST)
+        if form.is_valid():
+            korisnik = form.save()
+            messages.success(request, f'Account created for {korisnik.ime} {korisnik.prezime}')
+            return redirect('login')
+    else:
+        form = KorisnikCreationForm()
+    return render(request, 'upis/register.html', {'form': form})
+
+# to CBV
+def korisnik_login(request):
+    if request.method == 'POST':
+        form = KorisnikLoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            korisnik = authenticate(request, email=email, password=password)
+            if korisnik:
+                login(request, korisnik, backend='upis.auth.KorisnikBackend')
+                messages.success(request, f"Dobrodošao, {korisnik.ime}!")
+                return redirect('upis-home')  # Update with your desired route
+            else:
+                messages.error(request, "Invalid email or password.")
+    else:
+        form = KorisnikLoginForm()
+    return render(request, 'upis/login.html', {'form': form})
+
+# to CBV
+def korisnik_logout(request):
+    logout(request)
+    return render(request, 'upis/logout.html')
+
+@login_required
+def prijava_view(request, smjer=None):
+    if request.method == 'POST':
+        form = PrijavaForm(request.POST, request.FILES, user=request.user, smjer=smjer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Prijava na {form.cleaned_data.get('smjer')} uspješno zabilježena.")
+            return redirect('upis-home')  # Replace 'success' with the actual name of your success page.
+    else:
+        form = PrijavaForm(user=request.user, smjer=smjer)
+
+    return render(request, 'upis/prijava.html', {'form': form})
+
+@staff_member_required
+def prijave(request):
+    return render(request, 'upis/prijave.html')
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def handle_no_permission(self):
+        from django.contrib.auth.views import redirect_to_login
+        return redirect_to_login(self.request.get_full_path())
+
+class KorisniciListView(StaffRequiredMixin, ListView):
+    def get_queryset(self) -> QuerySet[tp.Any]:
+        lista_smjerova = Korisnik.objects.all()
+        return lista_smjerova
+    
+    def get_context_data(self):
+        context = super().get_context_data()
+        return context
+
+class PrijaveListView(StaffRequiredMixin, ListView):
+    def get_queryset(self) -> QuerySet[tp.Any]:
+        lista_smjerova = Prijava.objects.all()
+        return lista_smjerova
+    
+    def get_context_data(self):
+        context = super().get_context_data()
+        return context
+
+class KorisnikDeleteView(StaffRequiredMixin, DeleteView):
+    model = Korisnik
+    template_name = 'upis/korisnik_confirm_delete.html'
+    success_url = reverse_lazy('korisnici')  # Redirect back to korisnici list after deletion
+
+class KorisnikCreateView(StaffRequiredMixin, CreateView):
+    model = Korisnik
+    form_class = KorisnikCreationForm
+    template_name = 'upis/korisnik_novi.html'
+    success_url = reverse_lazy('korisnici')  # Redirect after successful creation
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['is_admin'] = True  # Pass to the form constructor
+        return kwargs
+    
+class KorisnikEditView(StaffRequiredMixin, UpdateView):
+    model = Korisnik
+    form_class = KorisnikEditForm
+    template_name = 'upis/korisnik_edit.html'
+    success_url = reverse_lazy('korisnici')  # Redirect after successful creation
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'Edit'  # Add a flag for the template to know it's an edit action
+        return context
 
 class SmjeroviListView(ListView):
     def get_queryset(self) -> QuerySet[tp.Any]:
@@ -57,70 +136,14 @@ class SmjeroviListView(ListView):
 class PredmetiListView(ListView):
     def get_queryset(self) -> QuerySet[tp.Any]:
         self.smjer = self.kwargs.get('smjer', None)
-        smjer_obj = Smjer.objects.get(naziv=self.smjer)
-        lista_predmeta = smjer_obj.predmeti.all()
+        self.smjer_obj = Smjer.objects.get(naziv=self.smjer)
+        lista_predmeta = self.smjer_obj.predmeti.all()
         return lista_predmeta
     
     def get_context_data(self):
         context = super().get_context_data()
         context['smjer'] = self.smjer
+        prijava = Prijava.objects.filter(korisnik_id=self.request.user.id, smjer_id=self.smjer_obj.id)
+        može_prijaviti = len(prijava) == 0
+        context['moze_prijaviti'] = može_prijaviti
         return context
-
-
-from django.contrib import messages
-from .forms import KorisnikCreationForm
-
-def register(request):
-    if request.method == "POST":
-        form = KorisnikCreationForm(request.POST)
-        if form.is_valid():
-            korisnik = form.save()
-            messages.success(request, f'Account created for {korisnik.ime} {korisnik.prezime}')
-            return redirect('login')
-    else:
-        form = KorisnikCreationForm()
-    return render(request, 'upis/register.html', {'form': form})
-
-
-def korisnik_login(request):
-    if request.method == 'POST':
-        form = KorisnikLoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            korisnik = authenticate(request, email=email, password=password)
-            if korisnik:
-                login(request, korisnik, backend='upis.auth.KorisnikBackend')
-                messages.success(request, f"Welcome back, {korisnik.ime}!")
-                return redirect('upis-home')  # Update with your desired route
-            else:
-                messages.error(request, "Invalid email or password.")
-    else:
-        form = KorisnikLoginForm()
-    return render(request, 'upis/login.html', {'form': form})
-
-
-def korisnik_logout(request):
-    logout(request)
-    # messages.success(request, "You have been logged out.")
-    return render(request, 'upis/logout.html')
-
-@login_required
-def user_admin(request):
-    return render(request, 'upis/user_admin.html')
-
-from django.shortcuts import render, redirect
-from .forms import PrijavaForm
-
-@login_required
-def prijava_view(request, smjer=None):
-    if request.method == 'POST':
-        form = PrijavaForm(request.POST, request.FILES, user=request.user, smjer=smjer)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f"Prijava na {form.cleaned_data.get('smjer')} uspješno zabilježena.")
-            return redirect('upis-home')  # Replace 'success' with the actual name of your success page.
-    else:
-        form = PrijavaForm(user=request.user, smjer=smjer)
-
-    return render(request, 'upis/prijava.html', {'form': form})

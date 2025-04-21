@@ -35,7 +35,6 @@ class Smjer(models.Model):
     def __str__(self):
         return self.naziv
 
-
 class Korisnik(AbstractBaseUser, PermissionsMixin):
     ime = models.CharField(max_length=100, null=False, blank=False)
     prezime = models.CharField(max_length=100, null=False, blank=False)

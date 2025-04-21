@@ -66,24 +66,25 @@
 /
     landing
 /smjerovi
-    popis smjerova, kvote i slobodnih mjesta
+    +popis smjerova, kvote i slobodnih mjesta
 /smjerovi/<smjer>
-    informacija o smjeru s listom predmeta i ETCS bodova
+    +informacija o smjeru s listom predmeta i ETCS bodova
 /smjerovi/<smjer>/<predmet>
-    opis predmeta s nazivom, ects bodovima, imenom nositelja i opisom
+    +opis predmeta s nazivom, ects bodovima, imenom nositelja i opisom
 /smjerovi/<smjer>/prijava
-    izravna prijava na dani smjer - formular sa smjerom ispunjenim
-    - provjeriti je li korisnik već upisan
+    +izravna prijava na dani smjer - formular sa smjerom ispunjenim
 /prijava
-    formular za prijavu
-    - provjeriti je li korisnik već upisan
+    +formular za prijavu
 /prijave
     popis prijava s korisnicima i prijavljenim smjerom
-    *bonus: sortirati popis proizvoljno
 /prijave/<broj prijave>
     stranica za odobrenje i negiranje prijave
     mjesto za unos razloga zašto
 /korisnici
-    stranica za pregledavanje dodavanje i brisanje korisnika (administratora)
+    +stranica za pregledavanje dodavanje i brisanje korisnika (administratora)
 /korisnici/novi
-    stranica za unos novog korisnika
+    +stranica za unos novog korisnika
+
+# TODO
+- pregled prijava i odobravanje
+- dodavanje i brisanje korisnika i administratora

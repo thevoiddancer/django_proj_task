@@ -1,0 +1,32 @@
+{% extends "upis/base.html" %}
+{% block content %}
+<h2>Prijave</h2>
+<article class="media content-section">
+    <div class="media-body">
+        <table class="table table-bordered table-sm w-auto text-center">
+            <thead class="thead-light">
+                <tr>
+                  <th class="align-middle">Ime</th>
+                  <!-- <th class="align-middle">Prezime</th>
+                  <th class="align-middle">Email</th> -->
+                  <th class="align-middle">Smjer</th>
+                  <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prijava in object_list %}
+                <tr>
+                    <td>{{ prijava.korisnik_id }}</td>
+                    <td>{{ prijava.smjer_id }}</td>
+                    <td><a href="#" class="btn btn btn-outline-secondary d-block">Odobri</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- <a href="#" class="btn btn btn-outline-secondary d-block">{{ smjer.naziv }}</a> -->
+        </table>
+        {% if moze_prijaviti %}
+            <a href="{% url 'prijava' %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
+        {% endif %}
+    </div>
+</article>
+{% endblock content %}

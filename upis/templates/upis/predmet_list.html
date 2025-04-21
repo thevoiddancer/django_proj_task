@@ -13,14 +13,22 @@
                 <tbody>
                     {% for predmet in object_list %}
                     <tr>
-                        <td>{{ predmet.ects }}</td>
-                        <td>{{ predmet.naziv }} <br /> {{ predmet.nositelj }}</td>
-                        <td>{{ predmet.opis }}</td>
+                        <td  class="align-middle">{{ predmet.ects }}</td>
+                        <td  class="align-middle">{{ predmet.naziv }} <br /> {{ predmet.nositelj }}</td>
+                        <td  class="align-middle">{{ predmet.opis }}</td>
                     </tr>
                     {% endfor %}
+                    <tr>
+                        <td colspan="3" class="align-middle">
+                            {% if moze_prijaviti %}
+                                <a href="{% url 'prijava' smjer %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
+                            {% else %}
+                                <p>Već si se prijavio na smjer</p>
+                            {% endif %}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            <a href="{% url 'prijava' smjer %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
         </div>
     </article>
 {% endblock content %}

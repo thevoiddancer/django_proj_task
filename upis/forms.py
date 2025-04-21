@@ -1,14 +1,33 @@
 from django import forms
-from .models import Korisnik, Smjer
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
+from .models import Korisnik, Smjer, Prijava
 
-class KorisnikCreationForm(forms.ModelForm):
+
+class KorisnikForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
+
+class KorisnikEditForm(KorisnikForm):
     class Meta:
         model = Korisnik
-        fields = ['ime', 'prezime', 'email', 'password']
+        fields = ['ime', 'prezime', 'email', 'is_staff', 'is_superuser', 'tip_korisnika']
+
+
+class KorisnikCreationForm(KorisnikForm):
+    class Meta:
+        model = Korisnik
+        fields = ['ime', 'prezime', 'email']
+
+    def __init__(self, *args, **kwargs):
+        self.is_admin = kwargs.pop('is_admin', False)
+        super().__init__(*args, **kwargs)
+
+        if self.is_admin:
+            self.fields['is_staff'] = forms.BooleanField(required=False, label="Is Staff")
+            self.fields['is_superuser'] = forms.BooleanField(required=False, label="Is Superuser")
+            self.fields['tip_korisnika'] = forms.ChoiceField(choices=Korisnik._meta.get_field('tip_korisnika').choices, label="Tip korisnika")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -23,7 +42,14 @@ class KorisnikCreationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.password_hash = make_password(self.cleaned_data["password"])
-        user.tip_korisnika = 'user'
+
+        if self.is_admin:
+            user.is_staff = self.cleaned_data.get("is_staff", False)
+            user.is_superuser = self.cleaned_data.get("is_superuser", False)
+            user.tip_korisnika = self.cleaned_data.get("tip_korisnika")
+        else:
+            user.tip_korisnika = 'user'
+
         if commit:
             user.save()
         return user
@@ -33,10 +59,6 @@ class KorisnikLoginForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
 
-
-from django import forms
-from .models import Prijava
-from django.core.exceptions import ValidationError
 
 class PrijavaForm(forms.ModelForm):
     class Meta:
@@ -56,27 +78,16 @@ class PrijavaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        print("vrijednosti")
-        print(args)
-        print(kwargs)
         smjer = kwargs.pop('smjer', None)
         user = kwargs.pop('user', None)
 
         super().__init__(*args, **kwargs)
 
-        # self.fields['smjer'] = forms.ModelChoiceField(
-        #     queryset=Smjer.objects.all(),
-        #     empty_label="Select a Smjer",
-        #     to_field_name="naziv",  # Display the 'naziv' of the Smjer in the dropdown
-        #     widget=forms.Select(attrs={'class': 'form-control'})
-        # )            
         if smjer:
             smjer_object = Smjer.objects.get(naziv=smjer)
-            print("imam smjer")
-            print(self.fields['smjer'])
             self.fields['smjer'].initial = smjer_object.id
-            self.fields['smjer'].widget = forms.HiddenInput()  # Make the smjer field hidden
-            self.smjer_label = smjer  # Store smjer's naziv as a label to display
+            self.fields['smjer'].widget = forms.HiddenInput()
+            self.smjer_label = smjer
 
 
         if user:
@@ -89,20 +100,16 @@ class PrijavaForm(forms.ModelForm):
             self.fields['smjer'].queryset = available_smjerovi
 
     def validate_file_upload(self):
-        molba = self.cleaned_data.get('molba')
-        if molba:
-            # Only allow PDF files for molba
-            if not molba.name.endswith('.pdf'):
-                raise ValidationError('Molba must be a PDF file.')
-            if molba.size > 5 * 1024 * 1024:  # 5MB limit
-                raise ValidationError('Molba file size must be less than 5MB.')
-        return molba
+        file = self.cleaned_data.get('file')
+        if file:
+            if not file.name.endswith('.pdf'):
+                raise ValidationError('Dokument mora biti tipa PDF.')
+            if file.size > 5 * 1024 * 1024:
+                raise ValidationError('Dokument mora biti manji od 5MB.')
+        return file
 
     def clean_molba(self):
         return self.validate_file_upload()
 
     def clean_dokument(self):
         return self.validate_file_upload()
-
-    prosjek_ocjena = forms.CharField(widget=forms.TextInput(attrs={'type': 'text'}))
-    ocjena_matura = forms.CharField(widget=forms.TextInput(attrs={'type': 'text'}))

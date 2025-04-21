@@ -115,12 +115,13 @@
             <div class="navbar-nav">
               {% if user.is_authenticated %}
                 {% if user.is_staff %}
-                  <a class="nav-item nav-link" href="{% url 'admin' %}">User Admin</a>
+                  <a class="nav-item nav-link" href="{% url 'korisnici' %}">Korisnici</a>
+                  <a class="nav-item nav-link" href="{% url 'prijave' %}">Prijave</a>
                 {% endif %}
-                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Odjavi se</a>
               {% else %}
-                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                <a class="nav-item nav-link" href="{% url 'login' %}">Prijavi se</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Registriraj se</a>
               {% endif %}
             </div>
           </div>

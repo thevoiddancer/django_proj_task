@@ -1,0 +1,40 @@
+{% extends "upis/base.html" %}
+{% block content %}
+<h2>Korisnici</h2>
+<article class="media content-section">
+    <div class="media-body">
+        <table class="table table-bordered table-sm w-auto text-center">
+            <thead class="thead-light">
+                <tr>
+                  <th class="align-middle">Ime</th>
+                  <th class="align-middle">Prezime</th>
+                  <th class="align-middle">Email</th>
+                  <th class="align-middle">Status</th>
+                  <th></th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for korisnik in object_list %}
+                <tr>
+                    <td>{{ korisnik.ime }}</td>
+                    <td>{{ korisnik.prezime }}</td>
+                    <td>{{ korisnik.email }}</td>
+                    <td>{{ korisnik.get_tip_korisnika_display }}</td>
+                    <td><a href="{% url 'korisnici-edit' korisnik.id %}" class="btn btn btn-outline-secondary d-block">Edit</a></td>
+                    <td class="align-middle">
+                        {% if request.user.id == korisnik.id %}
+                            Aktivan
+                        {% else %}
+                            <a href="{% url 'korisnici-delete' korisnik.id %}" class="btn btn btn-outline-secondary d-block">Delete</a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- <a href="#" class="btn btn btn-outline-secondary d-block">{{ smjer.naziv }}</a> -->
+        </table>
+        <a href="{% url 'korisnici-novi' %}" class="btn btn btn-outline-secondary d-block">Novi korisnik</a>
+    </div>
+</article>
+{% endblock content %}
