@@ -100,8 +100,6 @@ class Prijava(models.Model):
 class Odobrenje(models.Model):
     # TODO: implementirati logiku tako da se spremi informacija u slučaju brisanja entrya
     # možda spremiti podatke u obliku jsona za studenta i upisnika?
-    # student = models.ForeignKey(Korisnik, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
-    # smjer = models.ForeignKey(Smjer, on_delete=models.CASCADE, related_name='student', null=False, blank=False)
     prijava = models.ForeignKey(
         Prijava,
         on_delete=models.CASCADE,
@@ -124,5 +122,5 @@ class Odobrenje(models.Model):
         verbose_name = "Odobrenje"
         verbose_name_plural = "Odobrenja"
 
-    # def __repr__(self):
-    # return f'{self.student.prezime} [upisao: {self.upisnik.prezime}]'
+    def __repr__(self):
+        return f"{self.student.prezime} [upisao: {self.upisnik.prezime}]"

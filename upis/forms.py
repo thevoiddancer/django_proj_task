@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
 
 from .models import Korisnik, Odobrenje, Prijava, Smjer
 
@@ -12,7 +13,7 @@ class KorisnikForm(forms.ModelForm):
     )
 
 
-class KorisnikEditForm(KorisnikForm):
+class KorisnikEditForm(forms.ModelForm):
     class Meta:
         model = Korisnik
         fields = [
@@ -76,6 +77,21 @@ class OdobrenjeForm(forms.ModelForm):
     class Meta:
         model = Odobrenje
         fields = ["objasnjenje"]
+
+    def __init__(self, *args, **kwargs):
+        self.prijava_id = kwargs.pop("prijava_id", None)
+        self.upisnik_id = kwargs.pop("upisnik_id", None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, comit=True):
+        odobrenje = super().save(commit=False)
+        odobrenje.prijava_id = self.prijava_id
+        odobrenje.vrijeme = now()
+        odobrenje.upisnik_id = self.upisnik_id
+
+        if comit:
+            odobrenje.save()
+        return odobrenje
 
 
 class KorisnikLoginForm(forms.Form):

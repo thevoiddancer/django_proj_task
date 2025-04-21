@@ -21,10 +21,12 @@ urlpatterns = [
     ),
     path("prijave/", views.PrijaveListView.as_view(), name="prijave"),
     path("odobri/<int:pk>", views.OdobriView.as_view(), name="odobri"),
-    path("odobrenja/", views.OdobrenjaView.as_view(), name="odobrenja"),
+    path("odobrenja/", views.OdobrenjaListView.as_view(), name="odobrenja"),
     path("admin/", admin.site.urls),
     path("login/", views.korisnik_login, name="login"),
     path("logout/", views.korisnik_logout, name="logout"),
     path("register/", views.register, name="register"),
-    path("<str:smjer>/", views.PredmetiListView.as_view(), name="predmeti_list"),
+    path(
+        "predmeti/<str:smjer>/", views.PredmetiListView.as_view(), name="predmeti_list"
+    ),
 ]
