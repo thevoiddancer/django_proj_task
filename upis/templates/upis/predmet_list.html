@@ -5,21 +5,21 @@
             <table class="table table-bordered table-sm w-auto text-center">
                 <thead class="thead-light">
                     <tr>
-                      <th class="align-middle">ECTS</th>
-                      <th class="align-middle">Naziv predmeta i nositelj</th>
-                      <th class="align-middle">Opis</th>
+                      <th>ECTS</th>
+                      <th>Naziv predmeta i nositelj</th>
+                      <th>Opis</th>
                     </tr>
                   </thead>
                 <tbody>
                     {% for predmet in object_list %}
                     <tr>
-                        <td  class="align-middle">{{ predmet.ects }}</td>
-                        <td  class="align-middle">{{ predmet.naziv }} <br /> {{ predmet.nositelj }}</td>
-                        <td  class="align-middle">{{ predmet.opis }}</td>
+                        <td >{{ predmet.ects }}</td>
+                        <td >{{ predmet.naziv }} <br /> {{ predmet.nositelj }}</td>
+                        <td >{{ predmet.opis }}</td>
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="3" class="align-middle">
+                        <td colspan="3">
                             {% if moze_prijaviti %}
                                 <a href="{% url 'prijava' smjer %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a>
                             {% else %}

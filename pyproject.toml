@@ -13,6 +13,7 @@ psycopg2-binary = "^2.9.10"
 django-crispy-forms = "^2.4"
 bootstrap4 = "^0.1.0"
 ruff = "^0.11.6"
+crispy-bootstrap4 = "^2024.10"
 
 
 [build-system]

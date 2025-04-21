@@ -5,11 +5,11 @@
             <table class="table table-bordered table-sm w-auto text-center">
                 <thead class="thead-light">
                     <tr>
-                      <th class="align-middle">Naziv</th>
-                      <th class="align-middle">Kvota</th>
-                      <th class="align-middle">Slobodno</th>
-                      <th class="align-middle">Više<br />informacija</th>
-                      <th class="align-middle">Prijavi se</th>
+                      <th>Naziv</th>
+                      <th>Kvota</th>
+                      <th>Slobodno</th>
+                      <th>Više<br />informacija</th>
+                      <th>Prijavi se</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,10 +23,10 @@
                             {% if smjer.slobodno %}
                                 <td><a href="{% url 'prijava' smjer.naziv %}" class="btn btn btn-outline-secondary d-block">Prijavi se</a></td>
                             {% else %}
-                                <td class="align-middle">Kvota ispunjena</td>
+                                <td>Kvota ispunjena</td>
                             {% endif %}
                         {% else %}
-                            <td class="align-middle">Prijavljen</td>
+                            <td>Prijavljen</td>
                         {% endif %}
                     </tr>
                     {% endfor %}

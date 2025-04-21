@@ -6,10 +6,10 @@
         <table class="table table-bordered table-sm w-auto text-center">
             <thead class="thead-light">
                 <tr>
-                  <th class="align-middle">Ime</th>
-                  <th class="align-middle">Prezime</th>
-                  <th class="align-middle">Email</th>
-                  <th class="align-middle">Status</th>
+                  <th>Ime</th>
+                  <th>Prezime</th>
+                  <th>Email</th>
+                  <th>Status</th>
                   <th></th><th></th>
                 </tr>
             </thead>
@@ -21,7 +21,7 @@
                     <td>{{ korisnik.email }}</td>
                     <td>{{ korisnik.get_tip_korisnika_display }}</td>
                     <td><a href="{% url 'korisnici-edit' korisnik.id %}" class="btn btn btn-outline-secondary d-block">Edit</a></td>
-                    <td class="align-middle">
+                    <td>
                         {% if request.user.id == korisnik.id %}
                             Aktivan
                         {% else %}

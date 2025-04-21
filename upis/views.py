@@ -193,6 +193,7 @@ class SmjeroviListView(ListView):
 class PredmetiListView(ListView):
     def get_queryset(self) -> QuerySet[tp.Any]:
         self.smjer = self.kwargs.get("smjer", None)
+        print(self.smjer)
         self.smjer_obj = Smjer.objects.get(naziv=self.smjer)
         lista_predmeta = self.smjer_obj.predmeti.all()
         return lista_predmeta
