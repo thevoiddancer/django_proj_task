@@ -306,7 +306,8 @@ CREATE TABLE public.korisnici (
     is_active boolean NOT NULL,
     is_staff boolean NOT NULL,
     is_superuser boolean NOT NULL,
-    last_login timestamp with time zone
+    last_login timestamp with time zone,
+    password character varying
 );
 
 
@@ -691,7 +692,6 @@ COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
 6n4xvg2jjohikse3kq284g5ov0fpncov	e30:1u6Bcg:9gbSpck6w9gfmLrzIGN917fPNOtr7Ang0v_-QLXxeCM	2025-05-03 17:04:58.720652+00
 gm6heqqrh4b0jqvc3sga6qdmi0y9ib22	e30:1u6CCz:05l0mYKfZ6MsEPpm1GXqUlju_hOywOWxYfl2HXDIjc4	2025-05-03 17:42:29.874986+00
 nrt7syp0kg0mceaio5nogc0rexxr1pvj	e30:1u6CDM:CKjcVrLXR0s8aCuTjrOJCQ-yHoSy3qHeqpHPzoA4CP0	2025-05-03 17:42:52.741606+00
-2ajbtg64cvg6pj5d8gaordbfpq9tc6cv	.eJxVy0EOwiAQheG7sDZNh8IALt16CDIjTCBNqillZby7bdKFbt_3_reK1LcSe8trrEldlVOX343pMeflgP6qbThguD_X2pY63077Cwq1sr9HCiAAga1nxEw-WJfR2-CSJNQJzGh4Ig88GYYAxuUkLEYYrdOi1ecLHVIx2A:1u6pMt:_g54It41kD-UWPEA5e9EjiEoYe2pepmuygmULM5Imlk	2025-05-05 11:31:19.530933+00
 \.
 
 
@@ -699,15 +699,15 @@ nrt7syp0kg0mceaio5nogc0rexxr1pvj	e30:1u6CDM:CKjcVrLXR0s8aCuTjrOJCQ-yHoSy3qHeqpHP
 -- Data for Name: korisnici; Type: TABLE DATA; Schema: public; Owner: pguser
 --
 
-COPY public.korisnici (id, ime, prezime, email, password_hash, tip_korisnika, is_active, is_staff, is_superuser, last_login) FROM stdin;
-11	test123	test123	test@123.com	pbkdf2_sha256$1000000$VeGGufR3poe3OWL5KvuUo2$4xyvYiXO0HzLJNPFNZP+opuEj/jklWVTElpm/mphqGg=	user	t	f	f	\N
-13	pero	peroić	sdfvs@esef.csm	pbkdf2_sha256$1000000$20cklUHGrMdObe4sXkp8Es$liLuZd6jXK29cWCXF4dtIuzUvSdgPyo+iwV+UfJiJDs=	admin	t	t	t	\N
-4	Toma	Milić2	tomo@gmail.com	pbkdf2_sha256$1000000$z36GS0GpOTl4uayXMgRfkW$ga0iRh1MTqGwM5XAwzYqpHESka5RGVCU14AP4opGNhY=	admin	t	t	t	\N
-9	test	test	test@test.com	pbkdf2_sha256$1000000$skzaIqlabMDqBhnJWXsI9d$qsnGypahcJ4TPxemEtp+N7obelWXiz5mZUvuU1YT+OA=	user	t	f	f	2025-04-21 11:29:15.611305+00
-7	Tomislav	Nazifović	tomislav.nazifovic@gmail.com	pbkdf2_sha256$1000000$skzaIqlabMDqBhnJWXsI9d$qsnGypahcJ4TPxemEtp+N7obelWXiz5mZUvuU1YT+OA=	admin	t	t	t	2025-04-21 11:31:19.526974+00
-1	Ana	Marić	ana@gmail.com	pbkdf2_sha256$1000000$Q8IHFtyEzlF5ZZbjOWJvH8$YM5eVAuu5KUD7pa++irajEXlSSzvE6DRsoiYSZHcJz8=	user	t	f	f	\N
-2	Pero	Ivić	pero@gmail.com	pbkdf2_sha256$1000000$H6rRCgogqlUtqb91NIMXPr$P0n/VdXpoYdoZGt2Bl0QDiLEYgBJL+I3kwOLSUReB7w=	user	t	f	f	\N
-3	Marko	Anić	marko@gmail.com	pbkdf2_sha256$1000000$z36GS0GpOTl4uayXMgRfkW$ga0iRh1MTqGwM5XAwzYqpHESka5RGVCU14AP4opGNhY=	user	t	f	f	\N
+COPY public.korisnici (id, ime, prezime, email, password_hash, tip_korisnika, is_active, is_staff, is_superuser, last_login, password) FROM stdin;
+11	test123	test123	test@123.com	pbkdf2_sha256$1000000$VeGGufR3poe3OWL5KvuUo2$4xyvYiXO0HzLJNPFNZP+opuEj/jklWVTElpm/mphqGg=	user	t	f	f	\N	\N
+13	pero	peroić	sdfvs@esef.csm	pbkdf2_sha256$1000000$20cklUHGrMdObe4sXkp8Es$liLuZd6jXK29cWCXF4dtIuzUvSdgPyo+iwV+UfJiJDs=	admin	t	t	t	\N	\N
+4	Toma	Milić2	tomo@gmail.com	pbkdf2_sha256$1000000$z36GS0GpOTl4uayXMgRfkW$ga0iRh1MTqGwM5XAwzYqpHESka5RGVCU14AP4opGNhY=	admin	t	t	t	\N	\N
+1	Ana	Marić	ana@gmail.com	pbkdf2_sha256$1000000$Q8IHFtyEzlF5ZZbjOWJvH8$YM5eVAuu5KUD7pa++irajEXlSSzvE6DRsoiYSZHcJz8=	user	t	f	f	\N	\N
+2	Pero	Ivić	pero@gmail.com	pbkdf2_sha256$1000000$H6rRCgogqlUtqb91NIMXPr$P0n/VdXpoYdoZGt2Bl0QDiLEYgBJL+I3kwOLSUReB7w=	user	t	f	f	\N	\N
+3	Marko	Anić	marko@gmail.com	pbkdf2_sha256$1000000$z36GS0GpOTl4uayXMgRfkW$ga0iRh1MTqGwM5XAwzYqpHESka5RGVCU14AP4opGNhY=	user	t	f	f	\N	\N
+9	test	test	test@test.com	pbkdf2_sha256$1000000$skzaIqlabMDqBhnJWXsI9d$qsnGypahcJ4TPxemEtp+N7obelWXiz5mZUvuU1YT+OA=	user	t	f	f	2025-04-21 13:28:20.777885+00	\N
+7	Tomislav	Nazifović	tomislav.nazifovic@gmail.com	pbkdf2_sha256$1000000$skzaIqlabMDqBhnJWXsI9d$qsnGypahcJ4TPxemEtp+N7obelWXiz5mZUvuU1YT+OA=	admin	t	t	t	2025-04-21 13:28:27.687069+00	\N
 \.
 
 

@@ -15,8 +15,11 @@ psql-dump-data:
 psql-dump-all:
 	- pg_dump postgresql://pguser:pgpass@localhost:5555/pgdb > dump_all.sql
 
-psql-load:
+psql-load-data:
 	- psql postgresql://pguser:pgpass@localhost:5555/pgdb -f dump_data.sql
+
+psql-load-all:
+	- psql postgresql://pguser:pgpass@localhost:5555/pgdb -f dump_all.sql
 
 start:
 	- python manage.py runserver

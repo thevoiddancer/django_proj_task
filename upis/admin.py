@@ -9,7 +9,7 @@ class KorisnikAdmin(UserAdmin):
     ordering = ['email']
     search_fields = ['email']
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', )}),
         ('Personal Info', {'fields': ('ime', 'prezime')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Other Info', {'fields': ('tip_korisnika',)}),
