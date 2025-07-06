@@ -1,0 +1,30 @@
+curl commands
+
+curl -X POST -d "username=ADMIN&password=ADMIN" http://localhost:8000/api/token/; echo
+curl -X POST -d "username=newuser&password=strongpassword123" http://localhost:8000/api/token/; echo
+curl -X POST -d "username=newuser1&password=strongpassword123" http://localhost:8000/api/token/; echo
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \
+     -d '{"title": "Groceries", "amount": 100.50, "category": 1}' \
+     http://localhost:8000/api/expenses/; echo
+
+curl -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \ 
+     http://localhost:8000/api/categories/; echo
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \
+     -d '{"name": "Mjesečna", "type": "income", "parent": 1}' \
+     http://localhost:8000/api/categories/; echo
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"username": "newuser", "password": "strongpassword123", "email": "newuser@example.com"}' \
+     http://localhost:8000/register/; echo
+
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"username": "newuser1", "password": "strongpassword123", "email": "newuser@example.com"}' \
+     http://localhost:8000/register/; echo
