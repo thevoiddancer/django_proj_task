@@ -37,12 +37,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-class CurrentStateSerializer(serializers.Serializer):
+class CurrentBalanceSerializer(serializers.Serializer):
     total_income = serializers.DecimalField(max_digits=10, decimal_places=2)
     total_expense = serializers.DecimalField(max_digits=10, decimal_places=2)
     current_balance = serializers.DecimalField(max_digits=10, decimal_places=2)
 
-class StatsByYearSerializer(serializers.Serializer):
+class StatsSerializer(serializers.Serializer):
     year = serializers.IntegerField()
     expenses = serializers.DictField()
     incomes = serializers.DictField()

@@ -1,11 +1,5 @@
 curl commands
 
-# TODO:
-# "categories: show all parents"
-# "categories: show all direct children of"
-# "categories: show all children of"
-
-
 ### USER ADMIN ####
 # Get token / login
 curl -X POST -d "username=ADMIN&password=ADMIN" http://localhost:8000/api/token/; echo
