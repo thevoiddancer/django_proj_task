@@ -11,7 +11,7 @@ class Category(models.Model):
         INCOME = 'income', 'Income'
         EXPENSE = 'expense', 'Expense'
 
-    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
     type = models.CharField(
         max_length=7,
         choices=CategoryType.choices,
@@ -26,7 +26,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return f"{self.parent} -> {self.name}" if self.parent else self.name
+        return f"{self.parent} -> {self.title}" if self.parent else self.title
 
 class Expense(models.Model):
     """Expense items."""

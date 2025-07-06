@@ -1,28 +1,166 @@
 curl commands
 
-curl -X POST -d "username=ADMIN&password=ADMIN" http://localhost:8000/api/token/; echo
-curl -X POST -d "username=newuser&password=strongpassword123" http://localhost:8000/api/token/; echo
-curl -X POST -d "username=newuser1&password=strongpassword123" http://localhost:8000/api/token/; echo
+# TODO:
+# "categories: show all parents"
+# "categories: show all direct children of"
+# "categories: show all children of"
 
+
+### USER ADMIN ####
+# Get token / login
+curl -X POST -d "username=ADMIN&password=ADMIN" http://localhost:8000/api/token/; echo
+curl -X POST -d "username=test_user&password=test_user_123" http://localhost:8000/api/token/; echo
+
+# Register user
+# returns token
 curl -X POST \
      -H "Content-Type: application/json" \
-     -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \
-     -d '{"title": "Groceries", "amount": 100.50, "category": 1}' \
+     -d '{"username": "test_user", "password": "test_user_123", "email": "newuser@example.com"}' \
+     http://localhost:8000/api/register/; echo
+
+
+
+### CATEGORIES ####
+# C-reate
+# returns all, including ID
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "paycheck", "type": "income", "parent": null}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "bonus", "type": "income", "parent": 3}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "utilities", "type": "expense", "parent": null}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "power", "type": "expense", "parent": 5}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "water", "type": "expense", "parent": 5}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "food", "type": "expense", "parent": null}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "meat", "type": "expense", "parent": 7}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "fruits", "type": "expense", "parent": 7}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "salami", "type": "expense", "parent": 8}' \
+     http://localhost:8000/api/categories/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "steaks", "type": "expense", "parent": 8}' \
+     http://localhost:8000/api/categories/; echo
+
+- utilities
+     - water
+     - power
+- food
+     - meat
+          - salami
+          - steaks
+     - fruits
+
+# R-ead
+curl -X GET http://localhost:8000/api/categories/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+curl -X GET http://localhost:8000/api/categories/3/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+# U-pdate
+curl -X PUT http://localhost:8000/api/categories/4/ \
+  -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"title": "year bonus", "type": "income", "parent": 3}'; echo
+curl -X PUT http://localhost:8000/api/categories/4/ \
+  -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"title": "SPM bonus"}'; echo
+
+# D-elete
+curl -X DELETE http://localhost:8000/api/categories/13/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"
+
+
+
+### EXPENSES ####
+# C-reate
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "power jan", "amount": 20, "category": 14}' \
+     http://localhost:8000/api/expenses/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "power feb", "amount": 25, "category": 14}' \
+     http://localhost:8000/api/expenses/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "water jan", "amount": 10, "category": 6}' \
+     http://localhost:8000/api/expenses/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "chicken salami", "amount": 3, "category": 11}' \
+     http://localhost:8000/api/expenses/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "chicken breasts", "amount": 7, "category": 12}' \
      http://localhost:8000/api/expenses/; echo
 
-curl -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \ 
+# R-ead
+curl -X GET http://localhost:8000/api/expenses/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+curl -X GET http://localhost:8000/api/expenses/2/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+# U-pdate
+curl -X PUT http://localhost:8000/api/expenses/4/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"amount": 30, "category": 6, "title": "update water jan"}'; echo
+curl -X PATCH http://localhost:8000/api/expenses/5/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"amount": 60.0}'; echo
+
+# D-elete
+curl -X DELETE http://localhost:8000/api/expenses/5/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+#### INCOMES #####
+# C-reate
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "paycheck jan", "amount": 3000, "category": 3}' \
+     http://localhost:8000/api/incomes/; echo
+
+# R-ead
+curl -X GET http://localhost:8000/api/incomes/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+curl -X GET http://localhost:8000/api/incomes/1/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+# U-pdate
+curl -X PUT http://localhost:8000/api/incomes/5/ -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"title": "updated paycheck", "amount": 200, "category": 1}'; echo
+curl -X PATCH http://localhost:8000/api/incomes/5/ -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+  -d '{"amount": 300}'; echo
+
+# D-elete
+curl -X DELETE http://localhost:8000/api/incomes/5/ \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+
+### STATS
+
+curl -X GET http://127.0.0.1:8000/api/stats/2025 \
+  -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b"; echo
+
+
+
+curl -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \ 
      http://localhost:8000/api/categories/; echo
 
 curl -X POST \
      -H "Content-Type: application/json" \
-     -H "Authorization: Token e906976f12ba3ab78103d1b2cadc0461e59f39ed" \
+     -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
      -d '{"name": "Mjesečna", "type": "income", "parent": 1}' \
      http://localhost:8000/api/categories/; echo
 
-curl -X POST \
-     -H "Content-Type: application/json" \
-     -d '{"username": "newuser", "password": "strongpassword123", "email": "newuser@example.com"}' \
-     http://localhost:8000/register/; echo
+
 
 curl -X POST \
      -H "Content-Type: application/json" \

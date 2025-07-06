@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Expense, Income, Category
+from django.contrib.auth.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,18 +22,6 @@ class IncomeSerializer(serializers.ModelSerializer):
             'category': {'required': False, 'allow_null': True},
         }
 
-class CurrentStateSerializer(serializers.Serializer):
-    total_income = serializers.DecimalField(max_digits=10, decimal_places=2)
-    total_expense = serializers.DecimalField(max_digits=10, decimal_places=2)
-    current_balance = serializers.DecimalField(max_digits=10, decimal_places=2)
-
-class ExpenseByCategorySerializer(serializers.Serializer):
-    category__name = serializers.CharField()
-    total = serializers.DecimalField(max_digits=10, decimal_places=2)
-
-from django.contrib.auth.models import User
-from rest_framework import serializers
-
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -47,3 +36,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
+class CurrentStateSerializer(serializers.Serializer):
+    total_income = serializers.DecimalField(max_digits=10, decimal_places=2)
+    total_expense = serializers.DecimalField(max_digits=10, decimal_places=2)
+    current_balance = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class ExpenseByCategorySerializer(serializers.Serializer):
+    category__name = serializers.CharField()
+    total = serializers.DecimalField(max_digits=10, decimal_places=2)
+
