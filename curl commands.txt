@@ -95,6 +95,9 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e
      -d '{"title": "water jan", "amount": 10, "category": 6}' \
      http://localhost:8000/api/expenses/; echo
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
+     -d '{"title": "water feb", "amount": 30, "category": 6}' \
+     http://localhost:8000/api/expenses/; echo
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
      -d '{"title": "chicken salami", "amount": 3, "category": 11}' \
      http://localhost:8000/api/expenses/; echo
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Token 88652e0f05001a86192631471c273e88e419e43b" \
