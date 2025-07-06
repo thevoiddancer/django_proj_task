@@ -10,74 +10,81 @@ from django.db.models import Sum, Avg, Max, Min
 from django.utils.dateparse import parse_date
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
-from .serializers import CurrentStateSerializer, ExpenseByCategorySerializer, UserRegisterSerializer, ExpenseSerializer, IncomeSerializer, CategorySerializer, StatsByYearSerializer
+from .serializers import CurrentStateSerializer, UserRegisterSerializer, ExpenseSerializer, IncomeSerializer, CategorySerializer, StatsByYearSerializer
 from .models import Expense, Income, Category
 
 def home(request):
     return HttpResponse("Welcome to API task using Django.<br />(c) Tomislav Nazifović")
+
+KWORDS = ['name', 'type', 'location', 'description', 'many']
+param_tuples = (
+    ("date_from", OpenApiTypes.DATE, OpenApiParameter.QUERY, "Start date"),
+    ("date_to", OpenApiTypes.DATE, OpenApiParameter.QUERY, "End date"),
+    ("date_year", OpenApiTypes.INT, OpenApiParameter.QUERY, "Year of entry"),
+    ("date_month", OpenApiTypes.INT, OpenApiParameter.QUERY, "Month of entry"),
+    ("date_day", OpenApiTypes.INT, OpenApiParameter.QUERY, "Day of entry"),
+    ("amount_min", OpenApiTypes.NUMBER, OpenApiParameter.QUERY, "Minimum amount"),
+    ("amount_max", OpenApiTypes.NUMBER, OpenApiParameter.QUERY, "Maximum amount"),
+    ("cat_title", OpenApiTypes.STR, OpenApiParameter.QUERY, "List of categories by name", True),
+    ("cat_num", OpenApiTypes.INT, OpenApiParameter.QUERY, "List of categories by number", True),
+)
+
+common_query_parameters = [OpenApiParameter(**{k: v for k, v in zip(KWORDS, tuple_)}) for tuple_ in param_tuples]
+
+# common_query_parameters = [
+#     OpenApiParameter(name="date_from", type=OpenApiTypes.DATE, location=OpenApiParameter.QUERY, description="Start date"),
+#     OpenApiParameter("date_to", OpenApiTypes.DATE, location=OpenApiParameter.QUERY, description="End date"),
+#     OpenApiParameter("date_year", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Year of entry"),
+#     OpenApiParameter("date_month", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Month of entry"),
+#     OpenApiParameter("date_day", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Day of entry"),
+#     OpenApiParameter("amount_min", OpenApiTypes.NUMBER, location=OpenApiParameter.QUERY, description="Minimum amount"),
+#     OpenApiParameter("amount_max", OpenApiTypes.NUMBER, location=OpenApiParameter.QUERY, description="Maximum amount"),
+#     OpenApiParameter("cat_title", OpenApiTypes.STR, location=OpenApiParameter.QUERY, many=True, description="List of categories by name"),
+#     OpenApiParameter("cat_num", OpenApiTypes.INT, location=OpenApiParameter.QUERY, many=True, description="List of categories by number"),
+# ]
+
+def apply_query_filters(queryset, query_params):
+    date_from = query_params.get('date_from')
+    date_to = query_params.get('date_to')
+    date_year = query_params.get('date_year')
+    date_month = query_params.get('date_month')
+    date_day = query_params.get('date_day')
+    amount_min = query_params.get('amount_min')
+    amount_max = query_params.get('amount_max')
+    cat_title = query_params.getlist('cat_title')
+    cat_num = query_params.getlist('cat_num')
+    
+    if date_from:
+        queryset = queryset.filter(date__gte=parse_date(date_from))
+    if date_to:
+        queryset = queryset.filter(date__lte=parse_date(date_to))
+    if date_year:
+        queryset = queryset.filter(date__year=date_year)
+    if date_month:
+        queryset = queryset.filter(date__month=date_month)
+    if date_day:
+        queryset = queryset.filter(date__day=date_day)
+    if amount_min:
+        queryset = queryset.filter(amount__gte=amount_min)
+    if amount_max:
+        queryset = queryset.filter(amount__lte=amount_max)
+    if cat_title:
+        queryset = queryset.filter(category__title__in=cat_title)
+    if cat_num:
+        queryset = queryset.filter(category__in=cat_num)
+
+    return queryset
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Ovdje sam omogućio unošenje više kategorija, ali to me gurnulo u crnu rupu debate
-        # kako napraviti da parametri butu safe što se tiče jedne ili više vrijednosti
-        date_from = self.request.query_params.get('date_from')
-        date_to = self.request.query_params.get('date_to')
-        date_year = self.request.query_params.get('date_year')
-        date_month = self.request.query_params.get('date_month')
-        date_day = self.request.query_params.get('date_day')
-        amount_min = self.request.query_params.get('amount_min')
-        amount_max = self.request.query_params.get('amount_max')
-        cat_title = self.request.query_params.getlist('cat_title')
-        cat_num = self.request.query_params.getlist('cat_num')
-       
-        expenses = Expense.objects
-        if date_from:
-            expenses = expenses.filter(date__gte=parse_date(date_from))
-            print('date_from set')
-        if date_to:
-            expenses = expenses.filter(date__lte=parse_date(date_to))
-            print('date_to set')
-        if date_year:
-            expenses = expenses.filter(date__year=date_year)
-            print('date_year set')
-        if date_month:
-            expenses = expenses.filter(date__month=date_month)
-            print('date_month set')
-        if date_day:
-            expenses = expenses.filter(date__day=date_day)
-            print('date_day set')
-        if amount_min:
-            expenses = expenses.filter(amount__gte=amount_min)
-            print('amount_min set')
-        if amount_max:
-            expenses = expenses.filter(amount__lte=amount_max)
-            print('amount_max set')
-        if cat_title:
-            expenses = expenses.filter(category__title__in=cat_title)
-            print('cat_title set')
-        if cat_num:
-            expenses = expenses.filter(category__in=cat_num)
-            print('cat_num set')
+        queryset = Expense.objects.filter(user=self.request.user)
+        queryset = apply_query_filters(queryset, self.request.query_params)
+        return queryset
 
-        return expenses
-        # return Expense.objects.filter(user=self.request.user)
-
-    @extend_schema(
-        parameters=[
-            OpenApiParameter("date_from", OpenApiTypes.DATE, location=OpenApiParameter.QUERY, description="Start date"),
-            OpenApiParameter("date_to", OpenApiTypes.DATE, location=OpenApiParameter.QUERY, description="End date"),
-            OpenApiParameter("date_year", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Year of entry"),
-            OpenApiParameter("date_month", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Month of entry"),
-            OpenApiParameter("date_day", OpenApiTypes.INT, location=OpenApiParameter.QUERY, description="Day of entry"),
-            OpenApiParameter("amount_min", OpenApiTypes.NUMBER, location=OpenApiParameter.QUERY, description="Minimum amount"),
-            OpenApiParameter("amount_max", OpenApiTypes.NUMBER, location=OpenApiParameter.QUERY, description="Maximum amount"),
-            OpenApiParameter("cat_title", OpenApiTypes.STR, location=OpenApiParameter.QUERY, many=True, description="List of categories by name"),
-            OpenApiParameter("cat_num", OpenApiTypes.INT, location=OpenApiParameter.QUERY, many=True, description="List of categories by number"),
-        ]
-    )
+    @extend_schema(parameters=common_query_parameters)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -89,7 +96,13 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Income.objects.filter(user=self.request.user)
+        queryset = Income.objects.filter(user=self.request.user)
+        queryset = apply_query_filters(queryset, self.request.query_params)
+        return queryset
+
+    @extend_schema(parameters=common_query_parameters)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -153,8 +166,8 @@ class StatsByYearView(APIView):
         agg_stats_by_year = {'year': year, 'expenses': expenses_stats, 'incomes': incomes_stats}
 
         return Response(agg_stats_by_year)
-    
-class CurrentStateView(APIView):
+
+class CurrentBalanceView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(responses=CurrentStateSerializer)

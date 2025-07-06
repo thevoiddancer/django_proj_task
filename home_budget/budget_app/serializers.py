@@ -42,10 +42,6 @@ class CurrentStateSerializer(serializers.Serializer):
     total_expense = serializers.DecimalField(max_digits=10, decimal_places=2)
     current_balance = serializers.DecimalField(max_digits=10, decimal_places=2)
 
-class ExpenseByCategorySerializer(serializers.Serializer):
-    category__name = serializers.CharField()
-    total = serializers.DecimalField(max_digits=10, decimal_places=2)
-
 class StatsByYearSerializer(serializers.Serializer):
     year = serializers.IntegerField()
     expenses = serializers.DictField()

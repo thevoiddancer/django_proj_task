@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ExpenseViewSet, IncomeViewSet, CategoryViewSet, CurrentStateView, RegisterView, home, StatsByYearView
+from .views import ExpenseViewSet, IncomeViewSet, CategoryViewSet, CurrentBalanceView, RegisterView, home, StatsByYearView
 from rest_framework.authtoken.views import obtain_auth_token
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -16,7 +16,7 @@ urlpatterns = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema')),
 
-    path('current_state/', CurrentStateView.as_view()),
+    path('current_balance/', CurrentBalanceView.as_view()),
     path('stats/<int:year>', StatsByYearView.as_view()),
     # path('expense_by_category/', ExpenseByCategoryView.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
