@@ -141,4 +141,3 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for managing home budget (expenses, income).',
     'VERSION': '1.0.0',
 }
-
