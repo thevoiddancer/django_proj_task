@@ -1,21 +1,31 @@
 import django
-from rest_framework import viewsets, permissions, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-
-from django.http import HttpResponse
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.utils.dateparse import parse_date
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
+from rest_framework import permissions, status, viewsets
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
-from .serializers import CurrentBalanceSerializer, UserRegisterSerializer, ExpenseSerializer, IncomeSerializer, CategorySerializer, StatsSerializer
-from .models import Expense, Income, Category
+from .models import Category, Expense, Income
+from .serializers import (
+    CategorySerializer,
+    CurrentBalanceSerializer,
+    ExpenseSerializer,
+    IncomeSerializer,
+    StatsSerializer,
+    UserRegisterSerializer,
+)
+
+STARTING_BALANCE = 1000
+
 
 def home(request):
     return HttpResponse("Welcome to API task using Django.<br />(c) Tomislav Nazifović")
 
-KWORDS = ['name', 'type', 'location', 'description', 'many']
+
+KWORDS = ["name", "type", "location", "description", "many"]
 param_tuples = (
     ("date_from", OpenApiTypes.DATE, OpenApiParameter.QUERY, "Start date"),
     ("date_to", OpenApiTypes.DATE, OpenApiParameter.QUERY, "End date"),
@@ -24,23 +34,39 @@ param_tuples = (
     ("date_day", OpenApiTypes.INT, OpenApiParameter.QUERY, "Day of entry"),
     ("amount_min", OpenApiTypes.NUMBER, OpenApiParameter.QUERY, "Minimum amount"),
     ("amount_max", OpenApiTypes.NUMBER, OpenApiParameter.QUERY, "Maximum amount"),
-    ("cat_title", OpenApiTypes.STR, OpenApiParameter.QUERY, "List of categories by name", True),
-    ("cat_num", OpenApiTypes.INT, OpenApiParameter.QUERY, "List of categories by number", True),
+    (
+        "cat_title",
+        OpenApiTypes.STR,
+        OpenApiParameter.QUERY,
+        "List of categories by name",
+        True,
+    ),
+    (
+        "cat_num",
+        OpenApiTypes.INT,
+        OpenApiParameter.QUERY,
+        "List of categories by number",
+        True,
+    ),
 )
 
-common_query_parameters = [OpenApiParameter(**{k: v for k, v in zip(KWORDS, tuple_)}) for tuple_ in param_tuples]
+common_query_parameters = [
+    OpenApiParameter(**dict(zip(KWORDS, tuple_, strict=False)))  # type: ignore[arg-type]
+    for tuple_ in param_tuples
+]
+
 
 def apply_query_filters(queryset, query_params):
-    date_from = query_params.get('date_from')
-    date_to = query_params.get('date_to')
-    date_year = query_params.get('date_year')
-    date_month = query_params.get('date_month')
-    date_day = query_params.get('date_day')
-    amount_min = query_params.get('amount_min')
-    amount_max = query_params.get('amount_max')
-    cat_title = query_params.getlist('cat_title')
-    cat_num = query_params.getlist('cat_num')
-    
+    date_from = query_params.get("date_from")
+    date_to = query_params.get("date_to")
+    date_year = query_params.get("date_year")
+    date_month = query_params.get("date_month")
+    date_day = query_params.get("date_day")
+    amount_min = query_params.get("amount_min")
+    amount_max = query_params.get("amount_max")
+    cat_title = query_params.getlist("cat_title")
+    cat_num = query_params.getlist("cat_num")
+
     if date_from:
         queryset = queryset.filter(date__gte=parse_date(date_from))
     if date_to:
@@ -62,6 +88,7 @@ def apply_query_filters(queryset, query_params):
 
     return queryset
 
+
 class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -77,6 +104,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 class IncomeViewSet(viewsets.ModelViewSet):
     serializer_class = IncomeSerializer
@@ -94,10 +122,12 @@ class IncomeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -109,39 +139,35 @@ class RegisterView(APIView):
             user = serializer.save()
 
             Income.objects.create(
-                user=user,
-                title="Starting Balance",
-                amount=1000,
-                category=None
+                user=user, title="Starting Balance", amount=STARTING_BALANCE, category=None
             )
 
             token, _ = Token.objects.get_or_create(user=user)
             return Response(
-                {
-                    # "user": UserRegisterSerializer(user).data,
-                    "token": token.key,
-                },
-                status=status.HTTP_201_CREATED)
+                {"token": token.key},
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Stats(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
         parameters=(
-            common_query_parameters + 
-            [
+            common_query_parameters
+            + [
                 OpenApiParameter(
                     name="agg",
                     type=OpenApiTypes.STR,
                     location=OpenApiParameter.QUERY,
                     description="Aggregation functions, from django.db.models. Capitalized",
                     many=True,
-                    enum=['Avg', 'Count', 'Max', 'Min', 'StDev', 'Sum', 'Variance']
+                    enum=["Avg", "Count", "Max", "Min", "StDev", "Sum", "Variance"],
                 )
             ]
         ),
-        responses=StatsSerializer
+        responses=StatsSerializer,
     )
     def get(self, request):
         expenses_queryset = Expense.objects.filter(user=request.user)
@@ -149,21 +175,20 @@ class Stats(APIView):
         incomes_queryset = Income.objects.filter(user=request.user)
         incomes_queryset = apply_query_filters(incomes_queryset, self.request.query_params)
 
-        agg_functions = self.request.query_params.getlist('agg')
+        agg_functions = self.request.query_params.getlist("agg")
         if not agg_functions:
-            return Response(
-                {"detail": "Please provide at least one 'agg' parameter."},
-                status=400
-            )
+            return Response({"detail": "Please provide at least one 'agg' parameter."}, status=400)
         try:
             [getattr(django.db.models, agg) for agg in agg_functions]
         except Exception:
             return Response(
                 {"detail": "Please provide 'agg' parameters supported by django.db.models."},
-                status=400
+                status=400,
             )
 
-        agg_params = {agg.lower(): getattr(django.db.models, agg)('amount') for agg in agg_functions}
+        agg_params = {
+            agg.lower(): getattr(django.db.models, agg)("amount") for agg in agg_functions
+        }
 
         expenses_stats = expenses_queryset.aggregate(**agg_params)
         incomes_stats = incomes_queryset.aggregate(**agg_params)
@@ -171,19 +196,22 @@ class Stats(APIView):
         expenses_stats = {k: v or 0 for k, v in expenses_stats.items()}
         incomes_stats = {k: v or 0 for k, v in incomes_stats.items()}
 
-        stats = {'expenses': expenses_stats, 'incomes': incomes_stats}
+        stats = {"expenses": expenses_stats, "incomes": incomes_stats}
         return Response(stats)
+
 
 class CurrentBalanceView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(responses=CurrentBalanceSerializer)
     def get(self, request):
-        total_income = Income.objects.filter(user=request.user).aggregate(Sum('amount'))['amount__sum'] or 0
-        total_expense = Expense.objects.filter(user=request.user).aggregate(Sum('amount'))['amount__sum'] or 0
+        income_queryset = Income.objects.filter(user=request.user)
+        total_income = income_queryset.aggregate(Sum("amount"))["amount__sum"] or 0
+        expense_queryset = Expense.objects.filter(user=request.user)
+        total_expense = expense_queryset.aggregate(Sum("amount"))["amount__sum"] or 0
         balance = {
-            'total_income': total_income,
-            'total_expense': total_expense,
-            'current_balance': total_income - total_expense
+            "total_income": total_income,
+            "total_expense": total_expense,
+            "current_balance": total_income - total_expense,
         }
         return Response(balance)

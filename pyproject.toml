@@ -27,8 +27,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "-rfxX --ruff --verbose"
-#addopts = "-rfxX --mypy --ruff --verbose --cov-report html --cov-report term-missing --cov=budget_app --cov=home_budget"
+addopts = "-rfxX --mypy --ruff --verbose --cov-report html --cov-report term-missing --cov=budget_app --cov=home_budget"
 testpaths = [
     "tests",
     "budget_app",
@@ -41,14 +40,12 @@ markers = [
 DJANGO_SETTINGS_MODULE = "home_budget.settings"
 rootdir = "home_budget"
 
+[tool.coverage.run]
+omit = ["budget_app/migrations/*"]
+
 [tool.ruff]
-exclude = [
-    ".git",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".vscode",
-]
-line-lenght = 87
+exclude = [".git", ".pytest_cache", ".mypy_cache", ".vscode"]
+line-length = 100
 target-version = "py311"
 output-format = "full"
 
@@ -57,32 +54,3 @@ select = ["E", "W", "F", "C", "B", "I", "N"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-
-[tool.ruff.format]
-docstrings-code-format = false
-quote-stype = "preserve"
-
-
-
-
-
-
-
-#[tools.mypy]
-#plugins = [
-#    "mypy_drf_plugin.main",
-#    "django-stubs",
-#    "mypy_django_plugin.main"
-#]
-django_settings_module = "home_budget.settings"
-
-#[tools.mypy.plugins.django-stubs]
-
-#[mypy]
-#mypy_path = "./demo"
-#plugins = "mypy_django_plugin.main"
-
-#strict_optional = True
-
-#[mypy.plugins.django-stubs]
-#django_settings_module = demo.settings

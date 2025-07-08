@@ -5,15 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('budget_app', '0004_expense_date_expense_updated_at_income_date_and_more'),
+        ("budget_app", "0004_expense_date_expense_updated_at_income_date_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='income',
-            name='date',
+            model_name="income",
+            name="date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

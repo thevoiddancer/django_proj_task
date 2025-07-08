@@ -6,6 +6,9 @@ lint:
 	@ruff check --fix home_budget/ || true
 	@echo "Running ruff on tests"
 	@ruff check --fix tests/ || true
+
+mypy:
+	@clear
 	@echo "Running mypy on budget_app"
 	@poetry run mypy budget_app/ || true
 	@echo "Running mypy on home_budget"
@@ -25,8 +28,8 @@ format:
 format-diff:
 	@clear
 	@echo "Running ruff format on budget_app"
-	@ruff format -diff budget_app/ || true
+	@ruff format --diff budget_app/ || true
 	@echo "Running ruff format on home_budget"
-	@ruff format -diff home_budget/ || true
+	@ruff format --diff home_budget/ || true
 	@echo "Running ruff format on tests"
-	@ruff format -diff tests/ || true
+	@ruff format --diff tests/ || true
